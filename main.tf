@@ -11,7 +11,7 @@ provider "aws" {
   region  = var.region
 }
 
-resource "aws_vpc" "hashicat" {
+resource "aws_vpc" "peterp" {
   cidr_block           = var.address_space
   enable_dns_hostnames = true
 
@@ -21,8 +21,8 @@ resource "aws_vpc" "hashicat" {
   }
 }
 
-resource "aws_subnet" "hashicat" {
-  vpc_id     = aws_vpc.hashicat.id
+resource "aws_subnet" "peterp" {
+  vpc_id     = aws_vpc.peterp.id
   cidr_block = var.subnet_prefix
 
   tags = {
@@ -30,10 +30,10 @@ resource "aws_subnet" "hashicat" {
   }
 }
 
-resource "aws_security_group" "hashicat" {
+resource "aws_security_group" "peterp" {
   name = "${var.prefix}-security-group"
 
-  vpc_id = aws_vpc.hashicat.id
+  vpc_id = aws_vpc.peterp.id
 
   ingress {
     from_port   = 22
@@ -69,26 +69,26 @@ resource "aws_security_group" "hashicat" {
   }
 }
 
-resource "aws_internet_gateway" "hashicat" {
-  vpc_id = aws_vpc.hashicat.id
+resource "aws_internet_gateway" "peterp" {
+  vpc_id = aws_vpc.peterp.id
 
   tags = {
     Name = "${var.prefix}-internet-gateway"
   }
 }
 
-resource "aws_route_table" "hashicat" {
-  vpc_id = aws_vpc.hashicat.id
+resource "aws_route_table" "peterp" {
+  vpc_id = aws_vpc.peterp.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.hashicat.id
+    gateway_id = aws_internet_gateway.peterp.id
   }
 }
 
-resource "aws_route_table_association" "hashicat" {
-  subnet_id      = aws_subnet.hashicat.id
-  route_table_id = aws_route_table.hashicat.id
+resource "aws_route_table_association" "peterp" {
+  subnet_id      = aws_subnet.peterp.id
+  route_table_id = aws_route_table.peterp.id
 }
 
 data "aws_ami" "ubuntu" {
@@ -108,26 +108,26 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-resource "aws_eip" "hashicat" {
-  instance = aws_instance.hashicat.id
+resource "aws_eip" "peterp" {
+  instance = aws_instance.peterp.id
   vpc      = true
 }
 
-resource "aws_eip_association" "hashicat" {
-  instance_id   = aws_instance.hashicat.id
-  allocation_id = aws_eip.hashicat.id
+resource "aws_eip_association" "peterp" {
+  instance_id   = aws_instance.peterp.id
+  allocation_id = aws_eip.peterp.id
 }
 
-resource "aws_instance" "hashicat" {
+resource "aws_instance" "peterp" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
-  key_name                    = aws_key_pair.hashicat.key_name
+  key_name                    = aws_key_pair.peterp.key_name
   associate_public_ip_address = true
-  subnet_id                   = aws_subnet.hashicat.id
-  vpc_security_group_ids      = [aws_security_group.hashicat.id]
+  subnet_id                   = aws_subnet.peterp.id
+  vpc_security_group_ids      = [aws_security_group.peterp.id]
 
   tags = {
-    Name = "${var.prefix}-hashicat-instance"
+    Name = "${var.prefix}-peterp-instance"
   }
 }
 
@@ -144,7 +144,7 @@ resource "aws_instance" "hashicat" {
 # Add execute permissions to our scripts.
 # Run the deploy_app.sh script.
 resource "null_resource" "configure-cat-app" {
-  depends_on = [aws_eip_association.hashicat]
+  depends_on = [aws_eip_association.peterp]
 
   triggers = {
     build_number = timestamp()
@@ -157,8 +157,8 @@ resource "null_resource" "configure-cat-app" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = tls_private_key.hashicat.private_key_pem
-      host        = aws_eip.hashicat.public_ip
+      private_key = tls_private_key.peterp.private_key_pem
+      host        = aws_eip.peterp.public_ip
     }
   }
 
@@ -179,13 +179,13 @@ resource "null_resource" "configure-cat-app" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = tls_private_key.hashicat.private_key_pem
-      host        = aws_eip.hashicat.public_ip
+      private_key = tls_private_key.peterp.private_key_pem
+      host        = aws_eip.peterp.public_ip
     }
   }
 }
 
-resource "tls_private_key" "hashicat" {
+resource "tls_private_key" "peterp" {
   algorithm = "RSA"
 }
 
@@ -193,7 +193,7 @@ locals {
   private_key_filename = "${var.prefix}-ssh-key.pem"
 }
 
-resource "aws_key_pair" "hashicat" {
+resource "aws_key_pair" "peterp" {
   key_name   = local.private_key_filename
-  public_key = tls_private_key.hashicat.public_key_openssh
+  public_key = tls_private_key.peterp.public_key_openssh
 }
