@@ -13,7 +13,7 @@ cat << EOM > /var/www/html/index.html
   <center><h2>Peterp Shopping mall!</h2></center>
   Welcome to ${PREFIX}'s app. This is the best shopping mall in this world!!
 
-  This in test intance on AWS.
+  This in test intance on AWS!!!
   <!-- END -->
 
   </div>
