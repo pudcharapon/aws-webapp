@@ -1,8 +1,8 @@
 # Outputs file
-output "catapp_url" {
+output "app_url" {
   value = "http://${aws_eip.peterp.public_dns}"
 }
 
-output "catapp_ip" {
+output "app_ip" {
   value = "http://${aws_eip.peterp.public_ip}"
 }
