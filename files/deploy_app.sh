@@ -10,7 +10,7 @@ cat << EOM > /var/www/html/index.html
 
   <!-- BEGIN -->
   <center><img src="http://${PLACEHOLDER}/${WIDTH}/${HEIGHT}"></img></center>
-  <center><h2>Peterp Shopping mall!</h2></center>
+  <center><h2>NEW Peterp Shopping mall!</h2></center>
   Welcome to ${PREFIX}'s app. This is the best shopping mall in this world!!
 
   This in test intance on AWS!!!
